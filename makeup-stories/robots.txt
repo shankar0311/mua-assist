@@ -1,0 +1,7 @@
+# Crawling Rules for Search Engines
+User-agent: *
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+Sitemap: https://www.makeupstoriesbyrajeshwari.com/sitemap.xml

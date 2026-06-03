@@ -1,0 +1,387 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Makeup Stories by Rajeshwari - Luxury Design System & Premium Animations
+   ========================================================================== */
+
+/* Design Tokens & Root Styling */
+:root {
+    --color-primary: #8e2b43; /* Rich Deep Cabernet Burgundy */
+    --color-primary-container: #d99a91; /* Radiant Pearl Rose Gold */
+    --color-on-primary: #ffffff;
+    --color-surface: #fdfbf7; /* Luminous Pearl/Alabaster White */
+    --color-on-surface: #1a1516; /* Velvet Deep Charcoal */
+    --color-outline: #948082; /* Warm Slate Rose */
+    --color-outline-variant: #e6dad7; /* Soft Luminous Grey-Rose */
+    --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    --font-sans: 'Montserrat', 'Inter', system-ui, sans-serif;
+    --font-display: 'Cinzel', serif;
+}
+
+/* Base resets & Custom Scrollbar */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: var(--font-sans);
+}
+
+/* Custom Premium Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-outline-variant);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-outline);
+}
+
+/* ==========================================================================
+   1. Luxury Stylings & Effects
+   ========================================================================== */
+
+/* High-End Glassmorphism Panel */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(25px) saturate(110%);
+    -webkit-backdrop-filter: blur(25px) saturate(110%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(115, 92, 0, 0.05);
+}
+
+/* Soft Champagne Luxury Glow */
+.glow-champagne {
+    box-shadow: 0px 20px 50px rgba(212, 175, 55, 0.12);
+}
+
+/* Signature script style for the artist signature */
+.signature {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-primary);
+    position: relative;
+    display: inline-block;
+}
+
+/* Elegant Heart-shaped container frame */
+.heart-frame {
+    position: relative;
+    overflow: hidden;
+}
+
+.heart-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    pointer-events: none;
+    border-radius: inherit;
+    transition: border-color 0.5s ease;
+}
+
+.heart-frame:hover::after {
+    border-color: rgba(212, 175, 55, 0.8);
+}
+
+/* ==========================================================================
+   2. Cinematic Micro-Animations
+   ========================================================================== */
+
+/* Ken Burns background zoom animation */
+.ken-burns {
+    animation: kenburns 24s ease-in-out infinite alternate;
+}
+
+@keyframes kenburns {
+    0% {
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        transform: scale(1.08) translateY(-1.5%);
+    }
+}
+
+/* Luxury Sliding Shimmer Button Effect */
+.btn-shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.35) 50%, 
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    animation: shimmer 4s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -150%;
+    }
+    50% {
+        left: 150%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+/* Pulsing Slot Booking Button */
+.pulse-btn {
+    animation: pulse-gold 2.5s infinite;
+}
+
+@keyframes pulse-gold {
+    0% {
+        box-shadow: 0 0 0 0 rgba(115, 92, 0, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(115, 92, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(115, 92, 0, 0);
+    }
+}
+
+/* ==========================================================================
+   3. Scroll-Driven Transitions & Parallax
+   ========================================================================== */
+
+/* Standard fade-in-up class using CSS Transitions (Fallback/Default) */
+.fade-in-up {
+    opacity: 0;
+    transform: translateY(35px) scale(0.98);
+    filter: blur(4px);
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity, filter;
+}
+
+.fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+}
+
+/* Scroll-driven Parallax Backdrop (Native View Timeline) */
+@supports ((animation-timeline: view()) and (animation-range: entry)) {
+    /* Declare ViewTimeline for Scroll-Driven Animation */
+    .parallax-wrapper {
+        view-timeline: --hero-timeline;
+    }
+
+    .parallax-bg {
+        animation: parallax-scroll linear both;
+        animation-timeline: --hero-timeline;
+        animation-range: exit 0% exit 100%;
+        will-change: transform;
+    }
+
+    @keyframes parallax-scroll {
+        from {
+            transform: translateY(0);
+        }
+        to {
+            transform: translateY(220px);
+        }
+    }
+}
+
+/* A11y: Graceful degradation for users preferring reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .ken-burns,
+    .btn-shimmer::before,
+    .pulse-btn,
+    .parallax-bg {
+        animation: none !important;
+        transform: none !important;
+        background-attachment: scroll !important;
+    }
+    
+    .fade-in-up {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        transition: none !important;
+    }
+}
+
+/* Card Entry Animation for dynamic booking scheduler cards */
+@keyframes slideDownIn {
+    from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.98);
+        filter: blur(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+.animate-card-entry {
+    animation: slideDownIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ==========================================================================
+   4. Immersive 3D Visual System & Light Fields
+   ========================================================================== */
+
+/* Perspective Initializers */
+.perspective-3d {
+    perspective: 1200px;
+    transform-style: preserve-3d;
+}
+
+.preserve-3d {
+    transform-style: preserve-3d;
+}
+
+/* Floating Ambient Decorative Blobs */
+.ambient-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+}
+
+.blob-gold {
+    background: radial-gradient(circle, var(--color-primary-container) 0%, rgba(212, 175, 55, 0) 70%);
+}
+
+.blob-bronze {
+    background: radial-gradient(circle, #b4b49d 0%, rgba(180, 180, 157, 0) 70%);
+}
+
+/* 3D Cursor-reactive card styling */
+.tilt-3d {
+    transform-style: preserve-3d;
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, box-shadow;
+}
+
+.tilt-3d-inner {
+    transform: translateZ(35px);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-style: preserve-3d;
+}
+
+/* Scroll-driven 3D Entrance Reveals */
+.scroll-3d-entrance {
+    opacity: 0;
+    transform: perspective(1200px) rotateX(15deg) translateY(60px) scale(0.96);
+    transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity, filter;
+    filter: blur(4px);
+}
+
+.scroll-3d-entrance.visible {
+    opacity: 1;
+    transform: perspective(1200px) rotateX(0deg) translateY(0) scale(1);
+    filter: blur(0);
+}
+
+/* 3D Spin Step Transitions for Modals */
+.step-transition-3d {
+    animation: stepSpin 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-style: preserve-3d;
+}
+
+@keyframes stepSpin {
+    0% {
+        opacity: 0;
+        transform: perspective(1000px) rotateY(-35deg) translateZ(-100px) scale(0.92);
+        filter: blur(2px);
+    }
+    100% {
+        opacity: 1;
+        transform: perspective(1000px) rotateY(0deg) translateZ(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* 3D Interactive Testimonials Stage */
+.testimonial-stage-3d {
+    perspective: 1200px;
+    transform-style: preserve-3d;
+}
+
+.testimonial-card-3d {
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-style: preserve-3d;
+    will-change: transform, opacity, box-shadow;
+}
+
+.testimonial-card-3d.active {
+    transform: perspective(1200px) translate3d(0, 0, 40px) scale(1);
+    opacity: 1;
+    z-index: 10;
+    box-shadow: 0 20px 40px rgba(115, 92, 0, 0.12);
+}
+
+.testimonial-card-3d.prev {
+    transform: perspective(1200px) translate3d(-30px, 0, -80px) rotateY(20deg) scale(0.9);
+    opacity: 0.6;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.testimonial-card-3d.next {
+    transform: perspective(1200px) translate3d(30px, 0, -80px) rotateY(-20deg) scale(0.9);
+    opacity: 0.6;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Hero 3D Title Letter Reveal */
+.hero-title-word {
+    display: inline-block;
+    perspective: 500px;
+    transform-style: preserve-3d;
+}
+
+.hero-title-letter {
+    display: inline-block;
+    transform: rotateX(-90deg) translateZ(30px);
+    opacity: 0;
+    animation: letterReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: transform, opacity;
+}
+
+@keyframes letterReveal {
+    to {
+        transform: rotateX(0deg) translateZ(0);
+        opacity: 1;
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "makeup-stories",
+  "version": "1.0.0",
+  "description": "A state-of-the-art, high-fidelity responsive single-page web experience showcasing the luxury bridal and editorial makeup artistry of Rajeshwari, based in Bangalore.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tailwindcss -i ./index.css -o ./dist/output.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
+    "tailwindcss": "^3.4.1"
+  }
+}

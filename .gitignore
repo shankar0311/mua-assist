@@ -1,0 +1,47 @@
+# User Exclusions
+ui-ux-pro-max-skill/
+
+# Dependencies
+node_modules/
+jspm_packages/
+web_modules/
+.pnp
+.pnp.*
+
+# Build/Production outputs
+dist/
+build/
+.next/
+out/
+.docusaurus/
+.cache/
+
+# IDE and OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.class
+
+# Environment variables (sensitive data)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Logs and debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Diagnostic reports
+*.tsbuildinfo
+next-env.d.ts
