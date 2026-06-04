@@ -1,0 +1,27 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+context: |
+  Tech Stack:
+    - makeup-stories: HTML5, CSS3, Tailwind CSS v3, Vanilla JavaScript, responsive layout showcasing luxury bridal and editorial makeup artistry.
+    - mua_assistant: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Supabase (Database & Auth), Razorpay Integration (Payments), Framer Motion, PWA (@ducanh2912/next-pwa), Sentry.
+  Conventions:
+    - Follow Next.js App Router conventions and file-based routing.
+    - Use TypeScript for all React/Next.js client and server files.
+    - Use Tailwind CSS for responsive and modern styling.
+    - Maintain clean coding standards (camelCase, clear function names).
+    - Ensure robust client-side validation and secure API routes.
+  Domain:
+    - Makeup Artist (MUA) portfolio website and client booking management assistant.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+rules:
+  proposal:
+    - Focus proposals on technical feasibility, API specifications, and database schema updates.
+    - Clearly document any user flows, external integrations, and dependencies.
+  tasks:
+    - Keep checklist items detailed, incremental, and descriptive.
+    - Separate backend/Supabase schema changes from frontend layout modifications.
