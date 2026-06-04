@@ -1,5 +1,7 @@
 # User Exclusions
 ui-ux-pro-max-skill/
+.agent/
+.codex/
 
 # Dependencies
 node_modules/
