@@ -4,24 +4,100 @@ schema: spec-driven
 # This is shown to AI when creating artifacts.
 # Add your tech stack, conventions, style guides, domain knowledge, etc.
 context: |
-  Tech Stack:
-    - makeup-stories: HTML5, CSS3, Tailwind CSS v3, Vanilla JavaScript, responsive layout showcasing luxury bridal and editorial makeup artistry.
-    - mua_assistant: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Supabase (Database & Auth), Razorpay Integration (Payments), Framer Motion, PWA (@ducanh2912/next-pwa), Sentry.
-  Conventions:
-    - Follow Next.js App Router conventions and file-based routing.
-    - Use TypeScript for all React/Next.js client and server files.
-    - Use Tailwind CSS for responsive and modern styling.
-    - Maintain clean coding standards (camelCase, clear function names).
-    - Ensure robust client-side validation and secure API routes.
-  Domain:
-    - Makeup Artist (MUA) portfolio website and client booking management assistant.
+  Workspace Directory Architecture:
+    - makeup-stories/: A high-fidelity single-page web experience showcasing luxury bridal and editorial makeup artistry.
+      - Tech Stack: HTML5, CSS3, Tailwind CSS v3.4.1 (with forms & container-queries), Vanilla JavaScript, custom 3D carousel transitions.
+      - Features: Responsive portfolio grids, category filters, fullscreen lightbox slider, interactive multi-step Slot Booking Concierge wizard.
+      - External Integrations: Submits booking JSON payloads to an n8n webhook (https://shankar0311.app.n8n.cloud/webhook/mua-booking-inquiry).
+      - Config files: tailwind.config.js, robots.txt, sitemap.xml.
+    - mua_assistant/: A progressive web app (PWA) booking assistant for Makeup Artists.
+      - Tech Stack: Next.js 16.1.1 (App Router), React 19.2.3, TypeScript 5, Tailwind CSS v4, Supabase client, Razorpay integration, Framer Motion, date-fns.
+      - PWA Support: Equipped with `@ducanh2912/next-pwa`, custom service worker configurations (`sw.js`, `swe-worker-*.js`), offline fallback routes.
+      - Sentry Configuration: Custom client-side, edge, and server config integrations (`sentry.*.config.ts`).
+      - Code conventions: Strict TypeScript interfaces, ESLint integration (eslint.config.mjs), Next.js compiler plugins (babel-plugin-react-compiler).
+
+  Supabase Database Schema Structure (public schema):
+    - Table: public.users (MUA Profiles)
+      - id: UUID REFERENCES auth.users(id) NOT NULL PRIMARY KEY (Primary key tied to Auth users)
+      - name: TEXT
+      - phone: TEXT UNIQUE
+      - city: TEXT
+      - language_preference: TEXT DEFAULT 'en'
+      - created_at: TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+      - Row Level Security (RLS) Policies:
+        - "Users can view own profile" (auth.uid() = id)
+        - "Users can update own profile" (auth.uid() = id)
+        - "Users can insert own profile" (auth.uid() = id)
+    - Table: public.leads (Inquiries)
+      - id: UUID DEFAULT gen_random_uuid() PRIMARY KEY
+      - user_id: UUID REFERENCES public.users(id) NOT NULL
+      - client_name: TEXT NOT NULL
+      - phone: TEXT
+      - event_date: TIMESTAMP WITH TIME ZONE NOT NULL
+      - event_type: TEXT
+      - location: TEXT
+      - notes: TEXT
+      - status: TEXT CHECK (status IN ('new', 'contacted', 'converted', 'lost')) DEFAULT 'new'
+      - created_at: TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+      - Row Level Security (RLS) Policies:
+        - "Users can view own leads" (auth.uid() = user_id)
+        - "Users can insert own leads" (auth.uid() = user_id)
+        - "Users can update own leads" (auth.uid() = user_id)
+    - Table: public.bookings (Confirmed Jobs)
+      - id: UUID DEFAULT gen_random_uuid() PRIMARY KEY
+      - lead_id: UUID REFERENCES public.leads(id) UNIQUE NOT NULL (1:1 relationship with leads)
+      - user_id: UUID REFERENCES public.users(id) NOT NULL
+      - advance_amount: NUMERIC DEFAULT 0
+      - payment_status: TEXT CHECK (payment_status IN ('pending', 'partial', 'paid')) DEFAULT 'pending'
+      - booking_status: TEXT CHECK (booking_status IN ('new', 'advance_requested', 'confirmed', 'completed', 'cancelled')) DEFAULT 'new'
+      - buffer_time: INTEGER DEFAULT 0 (in minutes)
+      - created_at: TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+      - Row Level Security (RLS) Policies:
+        - "Users can view own bookings" (auth.uid() = user_id)
+        - "Users can insert own bookings" (auth.uid() = user_id)
+        - "Users can update own bookings" (auth.uid() = user_id)
+
+  Next.js API Routes & Security Policies (mua_assistant):
+    - API Endpoint: /api/booking
+      - GET: Scoped to user session. Returns formatted bookings and lead metadata.
+      - POST: Creates a new lead and matching booking. Accepts JWT-based user authorization or header API key validation (`x-api-key` vs `process.env.N8N_API_KEY`) for n8n webhook inserts.
+      - PATCH: Updates `booking_status` matched by `lead_id` (inquiryId).
+      - Security:
+        - In-memory sliding window rate limiter: 100 requests per 15 minutes window (`WINDOW_MS = 15 * 60 * 1000`) per client IP.
+        - Input sanitization: Sanitizes incoming strings against XSS (`sanitizeString` helper: escapes &, <, >, ", ', and /).
+        - CORS support: Explicitly handles preflight OPTIONS request, setting Access-Control-Allow-Headers to 'Content-Type, Authorization, x-api-key' and Access-Control-Allow-Methods to 'GET, POST, PATCH, OPTIONS'.
+    - API Endpoint: /api/razorpay/order
+      - POST: Creates a Razorpay order. Accepts `amount`, `currency`, and `receipt`. If `RAZORPAY_KEY_ID` or `RAZORPAY_KEY_SECRET` is missing, operates in Mock Mode returning mock order IDs prefixing `order_mock_`.
+    - API Endpoint: /api/razorpay/verify
+      - POST: Verifies Razorpay payment signatures using HMAC SHA-256 (`crypto.createHmac`) validation on `razorpay_order_id + "|" + razorpay_payment_id`. Supports mock validation bypass.
+
+  Client-Side Data Storage & Synchronization (mua_assistant/lib/):
+    - Storage Layer (storage.ts):
+      - Keeps state in LocalStorage keys: `mua_leads`, `mua_bookings`, `mua_services`.
+      - Handles collision/availability checks: `checkAvailabilityStatus` parses ISO dates and computes overlaps. Implements hard blocks on overlapping intervals and warning flags for buffer time violations (default buffer: 120 minutes).
+      - Default services: Bridal Makeup (15k INR), Party Makeup (5k INR), Engagement (8k INR), Reception (12k INR).
+    - Database Sync Layer (db.ts & SyncInitializer.tsx):
+      - Handles offline synchronization. Triggers a data push to Supabase table endpoints via `.upsert` once the browser window registers an 'online' network event.
+
+  Route Guarding Middleware (mua_assistant/middleware.ts):
+    - Utilizes cookie-based validation on `sb-access-token` via the Supabase client.
+    - Protected routes redirect unauthenticated traffic to `/login`.
+    - Excludes public verification pages `/verify`, static assets, `/favicon.ico`, and manifest routes.
+
+  n8n Webhook WhatsApp Automation Flow:
+    - Path: `mua-booking-inquiry` (POST)
+    - Receives multi-event payload containing client, venue, dates, makeup styles, and guest add-ons.
+    - Emits automated WhatsApp message templates via the WhatsApp Cloud API:
+      - Client message: Summarizes itinerary, booking state, and next steps.
+      - MUA alert: Sends detailed brief and timeline directly to the artist's contact line.
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
 rules:
   proposal:
-    - Focus proposals on technical feasibility, API specifications, and database schema updates.
-    - Clearly document any user flows, external integrations, and dependencies.
+    - Always outline how database schemas (leads, bookings, users) will be affected by a feature.
+    - Clearly document changes to API route configurations, rate limiting policies, and token validation.
+    - Align proposals with Next.js App Router structural principles, including server/client component hydration models.
   tasks:
-    - Keep checklist items detailed, incremental, and descriptive.
-    - Separate backend/Supabase schema changes from frontend layout modifications.
+    - Break task checklists into structured, incremental phases: 1) Schema & API security, 2) Client integration & offline sync, 3) Styling and UI validation.
+    - Provide explicit test checkpoints for verifying offline storage and network fallback features.
