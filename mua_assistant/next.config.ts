@@ -19,7 +19,7 @@ const cspHeader = `
     img-src 'self' blob: data: https://eqqfnqmxohuwetiyojwj.supabase.co;
     font-src 'self' https://fonts.gstatic.com;
     frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;
-    connect-src 'self' https://eqqfnqmxohuwetiyojwj.supabase.co wss://eqqfnqmxohuwetiyojwj.supabase.co https://api.razorpay.com;
+    connect-src 'self' https://eqqfnqmxohuwetiyojwj.supabase.co wss://eqqfnqmxohuwetiyojwj.supabase.co https://api.razorpay.com https://app.posthog.com https://us.i.posthog.com https://eu.i.posthog.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
